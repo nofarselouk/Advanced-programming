@@ -203,8 +203,6 @@ testData <- testData %>%
 drugs_mod <- logistic_reg() %>%
   set_engine("glm")
 
-#GENDER, DETNLF, DAYWAIT, FREQ1, FREQ3, SUB1, SUB2, SUB3, SERVICES
-
 drugs_rec <- recipe(HardDrugs ~ ., data = trainData) %>%
   step_rm(SUB1, SUB2, SUB3, DETNLF, DETCRIM, ROUTE3, FREQ3, FRSTUSE3, PREG, DAYWAIT, GENDER, METHFLG, SERVICES, METHFLG) %>%
   step_dummy(all_nominal(), -all_outcomes()) %>%
