@@ -27,10 +27,9 @@ drugsa <- read.csv("PUT DATALINK HERE")
 fill_HardDrugs <- function(data) {
     for (i in 1:nrow(data)) {
       if (data$DSMCRIT[i] == -9) {
-        # Check if the row has 2 or more of the frequent drugs
+        
         s <- sum(c(data$sub1_bin[i], data$sub2_bin[i], data$sub3_bin[i]))
         
-        # Fill with the corresponding DSMCRIT value if it contains 2 or more frequent drugs
         if (s >= 2) {
           data$HardDrugs[i] <- 1}
         else{
@@ -43,9 +42,8 @@ fill_HardDrugs <- function(data) {
 }
 ```
 ```{r}
-#' Performs data manipulation and calculates metrics related to the "HardDrugs" column
-#' 
-#Subset the dataset based on ASNCRIT values
+# Performs data manipulation and calculates metrics related to the "HardDrugs" column
+#Subset the dataset based on DSMCRIT values
 subset <- drugsa[drugsa$DSMCRIT != -9, ]
 #Assign values to "HardDrugs" based on DSMCRIT values
 subset$HardDrugs[subset$DSMCRIT %in% c(1, 2, 3, 4, 7, 9, 10, 14, 15, 16, 17, 18, 19)] <- 0
