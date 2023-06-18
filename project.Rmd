@@ -270,29 +270,6 @@ top_rows <- results_sorted[1:num_rows, ]
 # Print the top rows
 print(top_rows)
 ```
-```{r, eval=FALSE}
-library(ggplot2)
-
-
-age_vector <- top_rows$NOPRIOR
-age_counts <- table(age_vector)
-age_percentages <- prop.table(age_counts) * 100
-age_percentages <- sort(age_percentages, decreasing = TRUE)
-age_table <- data.frame(Age = names(age_percentages), Percentage = age_percentages)
-
-print(age_table)
-
-res <- sampled_data %>%
-  group_by(NOPRIOR, HardDrugs) %>%
-  summarize(Percentage = n()) %>%
-  group_by(NOPRIOR) %>%
-  mutate(Percentage = Percentage / sum(Percentage) * 100) %>%
-  pivot_wider(names_from = HardDrugs, values_from = Percentage, values_fill = 0)
-
-# Print the result
-print(res)
-
-```
 ```{r}
 columns <- colnames(top_rows)
 columns <- columns[1:(length(columns) - 4)]
