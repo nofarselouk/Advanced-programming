@@ -1,8 +1,3 @@
----
-title: "Final Project"
-author: "Team 20"
-output: pdf_document
----
 
 ```{r load-packages, message = FALSE}
 library(knitr)
@@ -23,27 +18,9 @@ library(dplyr)
 opts_chunk$set(echo=FALSE) # hide source code in the document
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
-
-## 1. Introduction
-The research question we will focus on is the characteristics of an individual using hard drugs. In general, many people don’t understand why or how other people become addicted to drugs. They may mistakenly think that those who use drugs lack moral principles or willpower and that they could stop their drug use simply by choosing to. In reality, drug addiction is a complex disease, and quitting usually takes more than good intentions or a strong will.
-
-A significant portion of the global population uses hard drugs.  There are many dangers associated with the use of hard drugs, and over the years, accessibility to them has been increasing among various populations. The goal of our research is to understand the underlying factors contributing to addiction to hard drugs. We aim to focus on different vulnerable populations to combat the phenomenon in a targeted and widespread manner. One of the reasons why understanding the characteristics of individuals using hard drugs can be challenging is the complex nature of drug addiction itself. Drug addiction is a multifaceted issue influenced by various biological, psychological, and social factors. These factors interact in unique ways for each individual, making it difficult to generalize or predict patterns of drug use and addiction.
-
-Our approach is to explore the information, while cleaning it and finding strong connections between different variables using the Cramer's V correlation method, which is known for categorical variables. After understanding the strong correlations, we will perform column factorization since all our variables represent categorical variables. We will create a logistic regression model using the relevant column to predict whether a person is registered in addiction treatment institutions due to a diagnosis of severe drug addiction. We will improve the model by filtering out columns that are not clear in the model and reach the relevant columns for our model. Based on the results, we will obtain characteristics of a person addicted to hard drugs.
-
-
-## 2. Data
-
-The data set contains information on the admission of individuals aged 12 years or older, including their demographic characteristics such as age, gender, race, ethnicity, employment status, and substance use patterns. This data was collected in 2020 in the United States. Specifically, we will focus on variables related to the person’s characteristics, such as their gender, age at admission, marital status, education, employment status, living arrangements, and source of income. 
-
-The dataset contains a column representing the initial diagnosis of a person entering a drug addiction treatment facility. There are several levels of diagnoses, including diagnoses related to mental conditions such as depression, anxiety, etc., as well as diagnoses related to addiction to different types of drugs, including hard drugs.
-
-## 3. Methods and results
-
 ```{r}
-drugsa <- read.csv("C:/Users/nofar/Desktop/TEDSA_PUF_2020.csv")
+drugsa <- read.csv("PUT DATALINK HERE")
 ```
-
 ```{r}
 #Fills the "HardDrugs" column based on the presence of frequent drugs
 
@@ -65,15 +42,6 @@ fill_HardDrugs <- function(data) {
   return(data)
 }
 ```
-
-In the dataset we are working on, there is a column called DSMCRIT which, as mentioned earlier, represents the initial diagnosis of a person entering a drug addiction treatment facility. We chose to represent this column in a binary form as HARD_DRUGS, where individuals diagnosed as addicted to hard drugs are represented as 1, and the rest are represented as 0.
-
-There were around 400,000 missing values in DSMCRIT, so we completed these values using the columns sub1, sub2, and sub3, which represent the primary, secondary, and tertiary substances declared at registration.
-
-We explored several options to fill in the missing values based on the correspondence between the binary column HARD_DRUGS and the binary columns we created for sub1, sub2, and sub3, indicating whether a hard drug was used or not.
-
-An analysis of the three binary columns showed a correlation between using two or more hard drugs and being diagnosed as addicted to hard drugs. Therefore, we decided that the use of two or more hard drugs would be classified as 1 in the HARD_DRUGS column, while the rest would be classified as 0.
-
 ```{r}
 #' Performs data manipulation and calculates metrics related to the "HardDrugs" column
 #' 
@@ -172,9 +140,9 @@ for (i in seq_along(column_names)) {
 sorted_correlation <- sort(correlation, decreasing = TRUE)
 
 # Print correlations with column names
-#for (i in seq_along(sorted_correlation)) {
- # print(paste0("Correlation with ", column_names[i], ": ", sorted_correlation[i]))
-#}
+for (i in seq_along(sorted_correlation)) {
+ print(paste0("Correlation with ", column_names[i], ": ", sorted_correlation[i]))
+}
 ```
 
 ```{r}
@@ -197,9 +165,6 @@ for (i in seq_along(column_names)) {
 }
 
 ```
-
-
-
 ```{r}
 selected_columns <- unlist(column_names[sorted_correlation >= 0.1])
 selected_columns <- c(selected_columns, "HardDrugs")
@@ -209,7 +174,6 @@ unselected_columns <- column_names[sorted_correlation < 0.1]
 unselected_columns <- c(unselected_columns, "DSMCRIT")
 unselected_columns <- unselected_columns[unselected_columns != "HardDrugs"]
 unselected_columns <- unlist(unselected_columns)
-
 ```
 
 ```{r}
@@ -236,7 +200,6 @@ testData <- testData %>%
   mutate_all(factor)
 
 ```
-
 
 ```{r}
 drugs_mod <- logistic_reg() %>%
@@ -265,11 +228,8 @@ results <- testData %>%
 ```
 
 ```{r}
-#conf_mat(data = results, truth = HardDrugs, estimate = .pred_class)
+conf_mat(data = results, truth = HardDrugs, estimate = .pred_class)
 ```
-
-
-After completing the values, we took a 20% sample of the data and divided it into train and test sets to build a logistic regression model. We constructed the model iteratively and filtered the columns based on their p-values until we obtained a model with good metrics, using only the most significant columns.
 
 ```{r}
 library(yardstick)
@@ -279,7 +239,7 @@ recall_val <- recall(data = results, truth = HardDrugs, estimate = .pred_class)
 f_meas_val <- f_meas(data = results, truth = HardDrugs, estimate = .pred_class)
 
 
-#tidy(logreg_fit)
+tidy(logreg_fit)
 
 # Extract the value from accuracy_val tibble
 accuracy_value <- accuracy_val$.estimate
@@ -312,10 +272,8 @@ results_sorted <- results[order(-results$.pred_1), ]
 top_rows <- results_sorted[1:num_rows, ]
 
 # Print the top rows
-#print(top_rows)
+print(top_rows)
 ```
-
-
 ```{r, eval=FALSE}
 library(ggplot2)
 
@@ -326,9 +284,7 @@ age_percentages <- prop.table(age_counts) * 100
 age_percentages <- sort(age_percentages, decreasing = TRUE)
 age_table <- data.frame(Age = names(age_percentages), Percentage = age_percentages)
 
-#print(age_table)
-
-
+print(age_table)
 
 res <- sampled_data %>%
   group_by(NOPRIOR, HardDrugs) %>%
@@ -338,82 +294,15 @@ res <- sampled_data %>%
   pivot_wider(names_from = HardDrugs, values_from = Percentage, values_fill = 0)
 
 # Print the result
-#print(res)
+print(res)
 
 ```
-
-After conducting the prediction, we took the top 5% of records with the highest probability to be classified as 1 - diagnosed as addicted to hard drugs. We then performed the analysis and drew conclusions about the characteristics of the population of individuals addicted to hard drugs entering the rehabilitation institution.
-
 ```{r}
 columns <- colnames(top_rows)
 columns <- columns[1:(length(columns) - 4)]
-#create_bar_graph <- function(data, columns) {
-#  for (column in columns) {
- #   print(ggplot(data, aes(x = .data[[column]])) + geom_bar())}
-#}
-#create_bar_graph(top_rows, columns)
-print(ggplot(top_rows,aes(x = ROUTE1)) + geom_bar())
-```
-
-Using these graphs, we have drawn conclusions about each variable we chose to analyze in the table.
-Here are the conclusions we reached:
-
-Personal characteristics:
-
-Marital status: Single.
-
-Common age range: 30-34.
-
-Ethnicity: White, referring to a person of European, Middle Eastern, or North African origin.
-
-Living alone.
-
-Education: Some college education.
-
-Gender: No significant difference between males and females.
-
-Originating from New Jersey and Michigan - urban areas.
-
-Socio-economic status:
-
-Unemployed - without a source of income.
-
-Having government health insurance, therefore, treatment is funded by the government.
-
-Addiction characteristics:
-
-Most individuals went through 5 or more treatment cycles in addiction facilities.
-
-Half of the individuals addicted to hard drugs have a mental disorder, a higher percentage compared to other addictions.
-
-Most individuals voluntarily sought treatment.
-
-The most common method of drug use is daily injection.
-
-Most individuals started using drugs at the age of 30. It is noteworthy that the common age range for drug addicts is 30-34, suggesting rapid deterioration.
-
-The vast majority do not require alcohol and marijuana.
-
-We expected higher percentages of cocaine/crack users, but the majority of addicts primarily use heroin.
-
-## 4. Limitations and Future Work
-
-One of the limitations we found is that the data contains information regarding addicts attending rehabilitation institutions but does not include general information about addicts. Additionally, we were limited in terms of the amount of data the model could process. We believe we would have obtained slightly different results if we had processed all the records in the data.
-
-Another limitation is the lack of responsiveness and guidance from the researcher regarding the data. Despite our extensive work and investment, we still feel there is a professional gap.
-
-If we had more time, we would have included data collected in previous years in the model to examine the differences between years and different addiction characteristics.
-
-## Appendix
-
-### Data README
-
-```{r include_data_readme, comment=''}
-# cat(readLines('../data/README.md'), sep = '\n')
-```
-
-### Source code
-
-```{r, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
-
+create_bar_graph <- function(data, columns) {
+  for (column in columns) {
+    print(ggplot(data, aes(x = .data[[column]])) + geom_bar())}
+}
+create_bar_graph(top_rows, columns)
 ```
